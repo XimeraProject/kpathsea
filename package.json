@@ -1,0 +1,32 @@
+{
+  "name": "@ximera/kpathsea",
+  "version": "1.0.0",
+  "description": "Enough kpathsea to power Ximera",
+  "main": "dist/kpathsea.js",
+  "scripts": {
+    "dev": "webpack --mode development",
+    "build": "webpack --mode production",
+    "prepare": "npm run build"
+  },
+  "bin": {
+    "lsr2json": "dist/lsr2json.js"
+  },
+  "author": {
+    "name": "Jim Fowler",
+    "email": "kisonecat@gmail.com",
+    "url": "http://kisonecat.com/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.35.0",
+    "webpack-cli": "^3.3.5"    
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/plugin-transform-regenerator": "^7.7.5",
+    "@babel/plugin-transform-runtime": "^7.7.6",
+    "@babel/preset-env": "^7.7.7"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.7.7"
+  }
+}

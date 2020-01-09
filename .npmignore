@@ -1,0 +1,11 @@
+webpack.config.js
+yarn.lock
+src/
+*.md
+
+# ignore emacs backups
+\#*\#
+.\#*
+
+# ignore scripts
+*.sh
