@@ -5,6 +5,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'kpathsea.js',
-    library: 'kpathsea'
+    library: 'Kpathsea',
+    libraryTarget: 'umd',
+    globalObject: 'this'
   },
+  externals: [
+    'semver'
+  ]
 };
