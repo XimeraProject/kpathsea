@@ -1,4 +1,8 @@
 webpack.config.js
+.babelrc
+ls-R
+*.json
+*.json.gz
 yarn.lock
 src/
 *.md
@@ -9,3 +13,7 @@ src/
 
 # ignore scripts
 *.sh
+
+# ignore tests
+test/*
+
