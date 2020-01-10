@@ -1,6 +1,5 @@
 import { version } from '../package.json';
 import * as path from 'path';
-import * as semver from 'semver';
 
 function insertTree( tree, key, value ) {
   if (key.length == 0) {
@@ -39,7 +38,7 @@ export default class Kpathsea {
       this.root = '/texmf';
 
     if (this.db.version) {
-      if ( ! semver.satisfies( version, '~' + this.db.version ) )
+      if ( version != this.db.version )
         throw new Error('incompatible database version');
     } else {
       throw new Error('missing version number in database');

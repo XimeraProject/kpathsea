@@ -9,7 +9,4 @@ module.exports = {
     libraryTarget: 'umd',
     globalObject: 'this'
   },
-  externals: [
-    'semver'
-  ]
 };

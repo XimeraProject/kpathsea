@@ -31,7 +31,6 @@
     "webpack-cli": "^3.3.5"
   },
   "dependencies": {
-    "@babel/runtime": "^7.7.7",
-    "semver": "^7.1.1"
+    "@babel/runtime": "^7.7.7"
   }
 }
