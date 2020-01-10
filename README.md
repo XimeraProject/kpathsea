@@ -13,3 +13,4 @@ Then it is possible to search for files by name with
 ```
 kpathsea.findMatch( theBasename );
 ```
+You can find all matches using `kpathsea.findMatches`.
