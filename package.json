@@ -1,6 +1,6 @@
 {
   "name": "@ximeraproject/kpathsea",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Enough kpathsea to power Ximera",
   "main": "dist/kpathsea.js",
   "scripts": {

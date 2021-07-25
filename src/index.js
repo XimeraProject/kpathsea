@@ -49,7 +49,7 @@ export default class Kpathsea {
     return JSON.stringify( this.db );
   }
 
-  add( filename ) {
+  add( filename, size ) {
     // In Kpathsea version 6.3.0 (released with TeX Live 2018), a new
     // fallback search was implemented on Unix-like systems, including
     // Macs: for each path element in turn, if no match is found by
@@ -63,12 +63,12 @@ export default class Kpathsea {
     if (pathcode < 0) {
       this.db.pathlist.push( dirname );
       pathcode = this.db.pathlist.indexOf(dirname);
-    }   
+    }
 
     if (f != path.basename(filename))
       pathcode = [pathcode, path.basename(filename)];
 
-    insertTree( this.db.trie, f, pathcode );
+    insertTree( this.db.trie, f, [size, pathcode] );
   }
   
   async findMatches( partialPath ) {
@@ -81,7 +81,10 @@ export default class Kpathsea {
     const root = this.root;
     const pathlist = this.db.pathlist;
 
-    matches = matches.map( function(m) {
+    matches = matches.map( function(match) {
+      let size = match[0];
+      let m = match[1];
+      
       if (typeof m === 'number') {
         return path.join( pathlist[m], key );
       } else {
@@ -96,6 +99,41 @@ export default class Kpathsea {
         return a.length - b.length;
       });
   }
+
+  async getFileSize( partialPath ) {
+    let key = path.basename(partialPath).toLowerCase();
+    let matches = getTree( this.db.trie, key );
+    
+    if (matches === undefined)
+      return [];
+   
+    const root = this.root;
+    const pathlist = this.db.pathlist;
+
+    for( let match of matches ) {
+      let size = match[0];
+      let m = match[1];
+
+      let fullPath = '';
+      
+      if (typeof m === 'number') {
+        fullPath = path.join( pathlist[m], key );
+      } else {
+        fullPath = path.join( pathlist[m[0]], m[1] );
+      }
+      fullPath = path.join(root, fullPath);
+
+      if (fullPath === partialPath)
+        return size;
+    }
+
+    return matches
+      .filter( fullPath => fullPath.toLowerCase().endsWith( partialPath.toLowerCase() ) )
+      .map( fullPath => path.join(root,fullPath) )
+      .sort(function(a, b){
+        return a.length - b.length;
+      });
+  }  
 
   async findMatch( partialPath ) {
     let matches = await this.findMatches( partialPath );

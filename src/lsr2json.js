@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import Kpathsea from './index.js';
+import * as cliProgress from 'cli-progress';
+
+// create a new progress bar instance and use shades_classic theme
+const progress = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
 
 async function* makeTextFileLineIterator(filename) {
-  let chunk = fs.readFileSync(filename, 'utf8');
+  let chunk = await fs.readFile(filename, 'utf8');
   
   const re = /\n|\r|\r\n/gm;
   let startIndex = 0;
-  let result;
   
   for (;;) {
     if (chunk.length == 0)
@@ -60,9 +63,14 @@ async function* makeFilenameIterator(filename) {
   return;
 }
 
-async function populateDatabase(database, filename) {
+async function populateDatabase(database, filename, progress) {
+  const root = path.dirname(filename);
+  
   for await (let filename of makeFilenameIterator(filename)) {
-    database.add( filename );
+    const resolved = path.join( root, filename );
+    const stat = await fs.stat(resolved);
+    database.add( filename, stat.size );
+    if (progress) progress.increment();
   }
 
   return;
@@ -82,38 +90,14 @@ async function populateDatabase(database, filename) {
 
   console.log(`Reading from ${inputFilename}...`);
   let database = new Kpathsea();
-  await populateDatabase(database, inputFilename);
-  console.log(`Writing to ${outputFilename}...`);  
-  fs.writeFileSync(outputFilename, database.toJSON());
+  progress.start(183100, 0);
+  await populateDatabase(database, inputFilename, progress);
+  progress.stop();  
+  console.log(`Writing to ${outputFilename}...`);
+
+  await fs.writeFile(outputFilename, database.toJSON());
+  
   console.log("Done!");
 
   return;
 })();
-
-
-/*
-async function populateDatabase(root) {
-  let list = [];
-  
-  for await (let filename of makeFilenameIterator(root)) {
-    // In Kpathsea version 6.3.0 (released with TeX Live 2018), a new
-    // fallback search was implemented on Unix-like systems, including
-    // Macs: for each path element in turn, if no match is found by
-    // the normal search, and the path element allows for checking the
-    // filesystem, a second check is made for a case-insensitive
-    // match.
-    let f = path.basename(filename).toLowerCase();
-    list.push( { basename: f, filename: filename } );
-  }
-
-  let db = await openDatabase();
-  let tx = db.transaction('filenames', 'readwrite');
-
-  for( let obj of list ) {
-    tx.store.add(obj);
-  }
-  
-  await tx.done;
-}
-*/
-
